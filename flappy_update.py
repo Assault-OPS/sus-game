@@ -1,51 +1,55 @@
+
+# NINE-ELEVEN
+# A GAME MADE BY AMOGH, ANAND AND AMMAR
+
 import pygame, sys, random 
 
 def draw_floor():
 	screen.blit(floor_surface,(floor_x_pos,900))
 	screen.blit(floor_surface,(floor_x_pos + 576,900))
 
-def create_pipe():
-	random_pipe_pos = random.choice(pipe_height)
-	bottom_pipe = pipe_surface.get_rect(midtop = (700,random_pipe_pos))
-	top_pipe = pipe_surface.get_rect(midbottom = (700,random_pipe_pos - 300))
-	return bottom_pipe,top_pipe
+def create_building():
+	random_building_pos = random.choice(building_height)
+	bottom_building = building_surface.get_rect(midtop = (700,random_building_pos))
+	top_building = building_surface.get_rect(midbottom = (700,random_building_pos - 300))
+	return bottom_building,top_building
 
-def move_pipes(pipes):
-	for pipe in pipes:
-		pipe.centerx -= 5
-	visible_pipes = [pipe for pipe in pipes if pipe.right > -50]
-	return visible_pipes
+def move_buildings(buildings):
+	for building in buildings:
+		building.centerx -= 5
+	visible_buildings = [building for building in buildings if building.right > -50]
+	return visible_buildings
 
-def draw_pipes(pipes):
-	for pipe in pipes:
-		if pipe.bottom >= 1024:
-			screen.blit(pipe_surface,pipe)
+def draw_buildings(buildings):
+	for building in buildings:
+		if building.bottom >= 1024:
+			screen.blit(building_surface,building)
 		else:
-			flip_pipe = pygame.transform.flip(pipe_surface,False,True)
-			screen.blit(flip_pipe,pipe)
+			flip_building = pygame.transform.flip(building_surface,False,True)
+			screen.blit(flip_building,building)
 
-def check_collision(pipes):
+def check_collision(buildings):
 	global can_score
-	for pipe in pipes:
-		if bird_rect.colliderect(pipe):
+	for building in buildings:
+		if plane_rect.colliderect(building):
 			death_sound.play()
 			can_score = True
 			return False
 
-	if bird_rect.top <= -100 or bird_rect.bottom >= 900:
+	if plane_rect.top <= -100 or plane_rect.bottom >= 900:
 		can_score = True
 		return False
 
 	return True
 
-def rotate_bird(bird):
-	new_bird = pygame.transform.rotozoom(bird,-bird_movement * 3,1)
-	return new_bird
+def rotate_plane(plane):
+	new_plane = pygame.transform.rotozoom(plane,-plane_movement * 3,1)
+	return new_plane
 
-def bird_animation():
-	new_bird = bird_frames[bird_index]
-	new_bird_rect = new_bird.get_rect(center = (100,bird_rect.centery))
-	return new_bird,new_bird_rect
+def plane_animation():
+	new_plane = plane_frames[plane_index]
+	new_plane_rect = new_plane.get_rect(center = (100,plane_rect.centery))
+	return new_plane,new_plane_rect
 
 def score_display(game_state):
 	if game_state == 'main_game':
@@ -66,16 +70,16 @@ def update_score(score, high_score):
 		high_score = score
 	return high_score
 
-def pipe_score_check():
+def building_score_check():
 	global score, can_score 
 	
-	if pipe_list:
-		for pipe in pipe_list:
-			if 95 < pipe.centerx < 105 and can_score:
+	if building_list:
+		for building in building_list:
+			if 95 < building.centerx < 105 and can_score:
 				score += 1
 				score_sound.play()
 				can_score = False
-			if pipe.centerx < 0:
+			if building.centerx < 0:
 				can_score = True
 
 #pygame.mixer.pre_init(frequency = 44100, size = 16, channels = 2, buffer = 1024)
@@ -85,8 +89,8 @@ clock = pygame.time.Clock()
 game_font = pygame.font.Font('04B_19.ttf',40)
 
 # Game Variables
-gravity = 0.25
-bird_movement = 0
+gravity = 0.4
+plane_movement = 0
 game_active = True
 score = 0
 high_score = 0
@@ -94,31 +98,31 @@ can_score = True
 bg_surface = pygame.image.load('assets/background-day.png').convert()
 bg_surface = pygame.transform.scale2x(bg_surface)
 
-floor_surface = pygame.image.load('assets/base.png').convert()
-floor_surface = pygame.transform.scale2x(floor_surface)
+# floor_surface = pygame.image.load('assets/base.png').convert()
+# floor_surface = pygame.transform.scale2x(floor_surface)
 floor_x_pos = 0
 
-bird_downflap = pygame.transform.scale2x(pygame.image.load('assets/bluebird-downflap.png').convert_alpha())
-bird_midflap = pygame.transform.scale2x(pygame.image.load('assets/bluebird-midflap.png').convert_alpha())
-bird_upflap = pygame.transform.scale2x(pygame.image.load('assets/bluebird-upflap.png').convert_alpha())
-bird_frames = [bird_downflap,bird_midflap,bird_upflap]
-bird_index = 0
-bird_surface = bird_frames[bird_index]
-bird_rect = bird_surface.get_rect(center = (100,512))
+plane_fire1 = pygame.transform.scale2x(pygame.image.load('assets/plane-fire1.png').convert_alpha())
+plane_fire2 = pygame.transform.scale2x(pygame.image.load('assets/plane-fire2.png').convert_alpha())
+plane_fire3 = pygame.transform.scale2x(pygame.image.load('assets/plane-fire3.png').convert_alpha())
+plane_frames = [plane_fire1,plane_fire2,plane_fire3]
+plane_index = 0
+plane_surface = plane_frames[plane_index]
+plane_rect = plane_surface.get_rect(center = (100,512))
 
-BIRDFLAP = pygame.USEREVENT + 1
-pygame.time.set_timer(BIRDFLAP,200)
+planeFLAP = pygame.USEREVENT + 1
+pygame.time.set_timer(planeFLAP,200)
 
-# bird_surface = pygame.image.load('assets/bluebird-midflap.png').convert_alpha()
-# bird_surface = pygame.transform.scale2x(bird_surface)
-# bird_rect = bird_surface.get_rect(center = (100,512))
+# plane_surface = pygame.image.load('assets/blueplane-fire2.png').convert_alpha()
+# plane_surface = pygame.transform.scale2x(plane_surface)
+# plane_rect = plane_surface.get_rect(center = (100,512))
 
-pipe_surface = pygame.image.load('assets/pipe-green.png')
-pipe_surface = pygame.transform.scale2x(pipe_surface)
-pipe_list = []
-SPAWNPIPE = pygame.USEREVENT
-pygame.time.set_timer(SPAWNPIPE,1200)
-pipe_height = [400,600,800]
+building_surface = pygame.image.load('assets/building.png')
+building_surface = pygame.transform.scale2x(building_surface)
+building_list = []
+SPAWNbuilding = pygame.USEREVENT
+pygame.time.set_timer(SPAWNbuilding,1200)
+building_height = [400,600,800]
 
 game_over_surface = pygame.transform.scale2x(pygame.image.load('assets/message.png').convert_alpha())
 game_over_rect = game_over_surface.get_rect(center = (288,512))
@@ -137,43 +141,43 @@ while True:
 			sys.exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE and game_active:
-				bird_movement = 0
-				bird_movement -= 12
+				plane_movement = 0
+				plane_movement -= 12
 				flap_sound.play()
 			if event.key == pygame.K_SPACE and game_active == False:
 				game_active = True
-				pipe_list.clear()
-				bird_rect.center = (100,512)
-				bird_movement = 0
+				building_list.clear()
+				plane_rect.center = (100,512)
+				plane_movement = 0
 				score = 0
 
-		if event.type == SPAWNPIPE:
-			pipe_list.extend(create_pipe())
+		if event.type == SPAWNbuilding:
+			building_list.extend(create_building())
 
-		if event.type == BIRDFLAP:
-			if bird_index < 2:
-				bird_index += 1
+		if event.type == planeFLAP:
+			if plane_index < 2:
+				plane_index += 1
 			else:
-				bird_index = 0
+				plane_index = 0
 
-			bird_surface,bird_rect = bird_animation()
+			plane_surface,plane_rect = plane_animation()
 
 	screen.blit(bg_surface,(0,0))
 
 	if game_active:
-		# Bird
-		bird_movement += gravity
-		rotated_bird = rotate_bird(bird_surface)
-		bird_rect.centery += bird_movement
-		screen.blit(rotated_bird,bird_rect)
-		game_active = check_collision(pipe_list)
+		# plane
+		plane_movement += gravity
+		rotated_plane = rotate_plane(plane_surface)
+		plane_rect.centery += plane_movement
+		screen.blit(rotated_plane,plane_rect)
+		game_active = check_collision(building_list)
 
-		# Pipes
-		pipe_list = move_pipes(pipe_list)
-		draw_pipes(pipe_list)
+		# buildings
+		building_list = move_buildings(building_list)
+		draw_buildings(building_list)
 		
 		# Score
-		pipe_score_check()
+		building_score_check()
 		score_display('main_game')
 	else:
 		screen.blit(game_over_surface,game_over_rect)
@@ -183,7 +187,7 @@ while True:
 
 	# Floor
 	floor_x_pos -= 1
-	draw_floor()
+	# draw_floor()
 	if floor_x_pos <= -576:
 		floor_x_pos = 0
 	
