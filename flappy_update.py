@@ -4,9 +4,9 @@
 
 import pygame, sys, random 
 
-def draw_floor():
-	screen.blit(floor_surface,(floor_x_pos,900))
-	screen.blit(floor_surface,(floor_x_pos + 576,900))
+# def draw_floor():
+# 	screen.blit(floor_surface,(floor_x_pos,900))
+# 	screen.blit(floor_surface,(floor_x_pos + 576,900))
 
 def create_building():
 	random_building_pos = random.choice(building_height)
