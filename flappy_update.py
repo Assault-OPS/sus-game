@@ -1,5 +1,5 @@
 
-# NINE-ELEVEN
+# MAY-DAY
 # A GAME MADE BY AMOGH, ANAND AND AMMAR
 
 import pygame, sys, random 
